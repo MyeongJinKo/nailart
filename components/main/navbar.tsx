@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const NAV_LINKS = [
   { label: "기능", href: "#features" },
@@ -73,8 +74,8 @@ export default function Navbar() {
         ))}
       </nav>
 
-      <a
-        href="#get-started"
+      <Link
+        href="/auth"
         style={{
           padding: "0.9rem 1.6rem",
           borderRadius: "999px",
@@ -87,7 +88,7 @@ export default function Navbar() {
         }}
       >
         지금 시작하기
-      </a>
+      </Link>
     </header>
   );
 }

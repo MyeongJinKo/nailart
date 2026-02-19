@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 export type AetherHeroProps = {
   /* ---------- Hero content ---------- */
   title?: string;
   subtitle?: string;
-  ctaLabel?: string;
-  ctaHref?: string;
-  secondaryCtaLabel?: string;
-  secondaryCtaHref?: string;
 
   align?: 'left' | 'center' | 'right'; // Content alignment
   maxWidth?: number; // px for text container (default 960)
@@ -72,15 +69,39 @@ in vec2 position;
 void main(){ gl_Position = vec4(position, 0.0, 1.0); }
 `;
 
+const compileShader = (gl: WebGL2RenderingContext, src: string, type: number) => {
+  const sh = gl.createShader(type)!;
+  gl.shaderSource(sh, src);
+  gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+    const info = gl.getShaderInfoLog(sh) || 'Unknown shader error';
+    gl.deleteShader(sh);
+    throw new Error(info);
+  }
+  return sh;
+};
+
+const createProgram = (gl: WebGL2RenderingContext, vs: string, fs: string) => {
+  const v = compileShader(gl, vs, gl.VERTEX_SHADER);
+  const f = compileShader(gl, fs, gl.FRAGMENT_SHADER);
+  const prog = gl.createProgram()!;
+  gl.attachShader(prog, v);
+  gl.attachShader(prog, f);
+  gl.linkProgram(prog);
+  gl.deleteShader(v);
+  gl.deleteShader(f);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    const info = gl.getProgramInfoLog(prog) || 'Program link error';
+    gl.deleteProgram(prog);
+    throw new Error(info);
+  }
+  return prog;
+};
+
 export default function AetherHero({
   /* Content */
   title = 'Make the impossible feel inevitable.',
   subtitle = 'A minimal hero with a living shader background. Built for product landings, announcements, and portfolio intros.',
-  ctaLabel = 'Get Started',
-  ctaHref = '#',
-  secondaryCtaLabel,
-  secondaryCtaHref,
-
   align = 'center',
   maxWidth = 960,
   overlayGradient = 'linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.08) 60%, transparent)',
@@ -103,35 +124,6 @@ export default function AetherHero({
   const uniTimeRef = useRef<WebGLUniformLocation | null>(null);
   const uniResRef = useRef<WebGLUniformLocation | null>(null);
   const rafRef = useRef<number | null>(null);
-
-  // Compile helpers
-  const compileShader = (gl: WebGL2RenderingContext, src: string, type: number) => {
-    const sh = gl.createShader(type)!;
-    gl.shaderSource(sh, src);
-    gl.compileShader(sh);
-    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-      const info = gl.getShaderInfoLog(sh) || 'Unknown shader error';
-      gl.deleteShader(sh);
-      throw new Error(info);
-    }
-    return sh;
-  };
-  const createProgram = (gl: WebGL2RenderingContext, vs: string, fs: string) => {
-    const v = compileShader(gl, vs, gl.VERTEX_SHADER);
-    const f = compileShader(gl, fs, gl.FRAGMENT_SHADER);
-    const prog = gl.createProgram()!;
-    gl.attachShader(prog, v);
-    gl.attachShader(prog, f);
-    gl.linkProgram(prog);
-    gl.deleteShader(v);
-    gl.deleteShader(f);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      const info = gl.getProgramInfoLog(prog) || 'Program link error';
-      gl.deleteProgram(prog);
-      throw new Error(info);
-    }
-    return prog;
-  };
 
   // Init GL
   useEffect(() => {
@@ -308,6 +300,29 @@ export default function AetherHero({
               {subtitle}
             </p>
           ) : null}
+
+          <div style={{ marginTop: '2rem' }}>
+            <Link
+              href="/auth"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.95rem 2rem',
+                fontSize: '1rem',
+                fontWeight: 600,
+                borderRadius: 9999,
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+                background:
+                  'linear-gradient(125deg, rgba(255, 198, 207, 0.95), rgba(102, 255, 253, 0.9))',
+                color: '#050505',
+                boxShadow: '0 18px 50px rgba(0,0,0,0.4)',
+              }}
+            >
+              지금 시작하기
+            </Link>
+          </div>
 
           {/* CTA와 데코는 제거하여 텍스트 중심 레이아웃 유지 */}
         </div>
