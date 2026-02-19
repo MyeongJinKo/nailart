@@ -7,6 +7,8 @@ export type AetherHeroProps = {
   /* ---------- Hero content ---------- */
   title?: string;
   subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 
   align?: 'left' | 'center' | 'right'; // Content alignment
   maxWidth?: number; // px for text container (default 960)
@@ -106,6 +108,8 @@ export default function AetherHero({
   maxWidth = 960,
   overlayGradient = 'linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.08) 60%, transparent)',
   textColor = '#ffffff',
+  ctaLabel = '지금 시작하기',
+  ctaHref = '/auth',
 
   /* Shader */
   fragmentSource = DEFAULT_FRAG,
@@ -303,7 +307,7 @@ export default function AetherHero({
 
           <div style={{ marginTop: '2rem' }}>
             <Link
-              href="/auth"
+              href={ctaHref}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -320,7 +324,7 @@ export default function AetherHero({
                 boxShadow: '0 18px 50px rgba(0,0,0,0.4)',
               }}
             >
-              지금 시작하기
+              {ctaLabel}
             </Link>
           </div>
 
